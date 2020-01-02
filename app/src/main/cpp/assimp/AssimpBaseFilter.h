@@ -76,7 +76,7 @@ protected:
 
     void import3DModel();
 
-    void recursiveGenBuffers(const struct aiScene *sc, const struct aiNode *nd);
+    virtual void recursiveGenBuffers(const struct aiScene *sc, const struct aiNode *nd);
 
     const aiScene *scene = NULL;
     // Create an instance of the Importer class

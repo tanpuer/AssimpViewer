@@ -6,6 +6,7 @@
 #include <GLES3/gl3.h>
 #include "AssimpRenderer.h"
 #include "AssimpBaseFilter.h"
+#include "AssimpSkeletalFilter.h"
 
 AssimpRenderer::AssimpRenderer() {
 
@@ -30,7 +31,8 @@ void AssimpRenderer::assmipViewerCreated(ANativeWindow *nativeWindow) {
     glCullFace(GL_CCW);
     glEnable(GL_BLEND);
 
-    filter = new AssimpBaseFilter();
+//    filter = new AssimpBaseFilter();
+    filter = new AssimpSkeletalFilter();
     filter->init();
 }
 
