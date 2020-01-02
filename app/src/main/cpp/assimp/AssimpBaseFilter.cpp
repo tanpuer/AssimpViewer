@@ -277,7 +277,7 @@ void AssimpBaseFilter::import3DModel() {
                 format = GL_RGBA;
             } else {
                 //todo
-                ALOGE("unSupport type %d", comp);
+                ALOGE("unSupport type %d %s", comp, fileloc.data());
             }
 
             if (nullptr != data) {
