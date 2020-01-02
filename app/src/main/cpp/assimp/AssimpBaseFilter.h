@@ -72,7 +72,7 @@ public:
 
     virtual void initShaders();
 
-private:
+protected:
 
     void import3DModel();
 
@@ -88,7 +88,6 @@ private:
 
     GLuint vertexShader;
     GLuint fragmentShader;
-    GLuint program;
 
     ndk_helper::Mat4 projectionMatrix;
     ndk_helper::Mat4 viewMatrix;
