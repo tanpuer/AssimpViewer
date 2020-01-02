@@ -99,7 +99,7 @@ private:
 
     float CAM_X = 0.f;
     float CAM_Y = 0.f;
-    float CAM_Z = 7.f;
+    float CAM_Z = 70.f;
 };
 
 

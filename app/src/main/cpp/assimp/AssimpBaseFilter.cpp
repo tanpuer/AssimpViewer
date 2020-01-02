@@ -152,7 +152,7 @@ void AssimpBaseFilter::setNativeWindowSize(int width, int height) {
     glGetIntegerv(GL_VIEWPORT, viewport);
 
     const float CAM_NEAR = 1.f;
-    const float CAM_FAR = 1000.f;
+    const float CAM_FAR = 100000000.f;
     if (viewport[2] < viewport[3]) {
         float aspect =
                 static_cast<float>(viewport[2]) / static_cast<float>(viewport[3]);
@@ -225,8 +225,10 @@ void AssimpBaseFilter::initShaders() {
 }
 
 void AssimpBaseFilter::import3DModel() {
-    const std::string filePath = "/sdcard/batman.obj";
+//    const std::string filePath = "/sdcard/batman.obj";
 //    const std::string filePath = "/sdcard/12228_Dog_v1_L2.obj";
+//    const std::string filePath = "/sdcard/12228_Dog_v1_L2.obj";
+    const std::string filePath = "/sdcard/11803_Airplane_v1_l1.obj";
     assert(fileExist(filePath));
     scene = importer.ReadFile(filePath, aiProcessPreset_TargetRealtime_Quality);
     if (!scene) {
@@ -333,9 +335,9 @@ void AssimpBaseFilter::recursiveGenBuffers(const struct aiScene *sc, const struc
             assert(face->mNumIndices == 3);
             for (int j = 0; j< face->mNumIndices ; ++j) {
                 int vertexIndex = face->mIndices[j];
-                p[index].pos[0] = mesh->mVertices[vertexIndex].x;
-                p[index].pos[1] = mesh->mVertices[vertexIndex].y;
-                p[index].pos[2] = mesh->mVertices[vertexIndex].z;
+                p[index].pos[0] = mesh->mVertices[vertexIndex].x / 100;
+                p[index].pos[1] = mesh->mVertices[vertexIndex].y / 100;
+                p[index].pos[2] = mesh->mVertices[vertexIndex].z / 100;
                 if (mesh->HasNormals()) {
                     p[index].normal[0] = mesh->mNormals[vertexIndex].x;
                     p[index].normal[1] = mesh->mNormals[vertexIndex].y;
