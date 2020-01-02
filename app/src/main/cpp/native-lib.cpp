@@ -11,7 +11,7 @@ Java_com_cw_assimpviewer_NativeAssimpView_nativeAssimpCreated(
         jobject surface
 ) {
     assimpLooper = new AssimpLooper(ANativeWindow_fromSurface(env, surface));
-    assimpLooper->sendMessage(assimpLooper->kMsgAssmipViewerCreated);
+    assimpLooper->sendMessage(assimpLooper->kMsgAssimpViewerCreated);
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -32,7 +32,7 @@ Java_com_cw_assimpviewer_NativeAssimpView_nativeAssimpDestroyed(
         jobject instance
 ) {
     if (assimpLooper != nullptr) {
-        assimpLooper->sendMessage(assimpLooper->kMsgAssmipViewerDestroyed);
+        assimpLooper->sendMessage(assimpLooper->kMsgAssimpViewerDestroyed);
     }
 }
 
@@ -42,6 +42,52 @@ Java_com_cw_assimpviewer_NativeAssimpView_nativeAssimpDoFrame(
         jobject instance
 ) {
     if (assimpLooper != nullptr) {
-        assimpLooper->sendMessage(assimpLooper->kMsgAssmipViewerDoFrame);
+        assimpLooper->sendMessage(assimpLooper->kMsgAssimpViewerDoFrame);
+    }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_cw_assimpviewer_NativeAssimpView_nativeAssimpScroll(
+        JNIEnv *env,
+        jobject instance,
+        jint scrollX,
+        jint scrollY
+) {
+    if (assimpLooper != nullptr) {
+        assimpLooper->setScroll(scrollX, scrollY);
+    }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_cw_assimpviewer_NativeAssimpView_nativeAssimpScrollAsync(
+        JNIEnv *env,
+        jobject instance,
+        jint scrollX,
+        jint scrollY
+) {
+    if (assimpLooper != nullptr) {
+        assimpLooper->sendMessage(assimpLooper->kMsgAssimpViewerScroll, scrollX, scrollY);
+    }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_cw_assimpviewer_NativeAssimpView_nativeAssimpScale(
+        JNIEnv *env,
+        jobject instance,
+        jint scale
+) {
+    if (assimpLooper != nullptr) {
+        assimpLooper->setScale(scale);
+    }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_cw_assimpviewer_NativeAssimpView_nativeAssimpScaleAsync(
+        JNIEnv *env,
+        jobject instance,
+        jint scale
+) {
+    if (assimpLooper != nullptr) {
+        assimpLooper->sendMessage(assimpLooper->kMsgAssimpViewerScale, scale, 0);
     }
 }

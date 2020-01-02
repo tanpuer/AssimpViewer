@@ -66,3 +66,15 @@ void AssimpRenderer::assimpViewerDoFrame() {
 
     windowSurface->swapBuffer();
 }
+
+void AssimpRenderer::setScroll(int scrollX, int scrollY) {
+    if (filter != nullptr) {
+        filter->setScroll(scrollX, scrollY);
+    }
+}
+
+void AssimpRenderer::setScale(int scale) {
+    if (filter != nullptr) {
+        filter->setScale(scale);
+    }
+}

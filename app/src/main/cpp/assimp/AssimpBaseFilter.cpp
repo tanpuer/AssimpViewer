@@ -48,7 +48,6 @@ static const char *FRAGMEMT_SHADER = GET_STR(
         uniform highp vec3   vLight0;
         varying mediump vec3 position;
         varying mediump vec3 normal;
-        uniform vec3 diffuse;
         varying vec3 vMyColor;
         void main() {
             mediump vec3 halfVector = normalize(-vLight0 + position);
@@ -61,7 +60,7 @@ static const char *FRAGMEMT_SHADER = GET_STR(
 //            2.0f * vec4(vMaterialAmbient.xyz, 1.0f) + colorSpecular;
             gl_FragColor = texture2D(samplerObj, texCoord);
 //            gl_FragColor = vec4(vMyColor, 1.0);
-//            gl_FragColor = mix(texture2D(samplerObj, texCoord), vec4(diffuse, 1.0), 0.5);
+//            gl_FragColor = mix(texture2D(samplerObj, texCoord), vec4(vMyColor, 1.0), 0.5);
         }
 );
 
@@ -77,10 +76,9 @@ void AssimpBaseFilter::doFrame() {
     viewMatrix = ndk_helper::Mat4::LookAt(ndk_helper::Vec3(CAM_X, CAM_Y, CAM_Z / scaleIndex),
                                           ndk_helper::Vec3(0.f, 0.f, 0.f),
                                           ndk_helper::Vec3(0.f, 1.f, 0.f));
-
     modelMatrix = ndk_helper::Mat4::Identity();
-    ndk_helper::Mat4 scrollXMat = ndk_helper::Mat4::RotationY(-PI * 0 / 180);
-    ndk_helper::Mat4 scrollYMat = ndk_helper::Mat4::RotationX(-PI * 0 / 180);
+    ndk_helper::Mat4 scrollXMat = ndk_helper::Mat4::RotationY(-PI * scrollX / 180);
+    ndk_helper::Mat4 scrollYMat = ndk_helper::Mat4::RotationX(-PI * scrollY / 180);
     modelMatrix = scrollXMat * scrollYMat * modelMatrix;
 
     viewMatrix = viewMatrix * modelMatrix;
@@ -216,7 +214,6 @@ void AssimpBaseFilter::loadObj() {
     shaderProgram->materialSpecular =
             glGetUniformLocation(program, "vMaterialSpecular");
     shaderProgram->samplerObj = glGetUniformLocation(program, "samplerObj");
-    shaderProgram->diffuse = glGetUniformLocation(program, "diffuse");
     shaderProgram->program = program;
 
 
@@ -373,6 +370,7 @@ void AssimpBaseFilter::recursiveGenBuffers(const struct aiScene *sc, const struc
         glBindBuffer(GL_ARRAY_BUFFER, buffer);
         glBufferData(GL_ARRAY_BUFFER, stride * num, p, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+        delete[] p;
 
         aiString path;
         scene->mMaterials[mesh->mMaterialIndex]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
@@ -381,7 +379,6 @@ void AssimpBaseFilter::recursiveGenBuffers(const struct aiScene *sc, const struc
         }
 
         DrawObject drawObject;
-        drawObject.vertex = p;
         drawObject.buffer = buffer;
         drawObject.textureName = path.data;
         drawObject.triangleSize = num / 3;

@@ -24,7 +24,6 @@ struct SHADER_VERTEX {
 };
 
 struct DrawObject {
-    SHADER_VERTEX *vertex;
     GLuint buffer;
     std::string textureName;
     int triangleSize;
@@ -49,7 +48,6 @@ struct SHADER_PARAMS {
     GLuint viewMatrix;
 
     GLuint samplerObj;
-    GLuint diffuse;
 };
 
 struct SHADER_MATERIALS {
@@ -102,9 +100,6 @@ private:
     float CAM_X = 0.f;
     float CAM_Y = 0.f;
     float CAM_Z = 7.f;
-    int scrollX = 0;
-    int scrollY = 0;
-    float scaleIndex = 1.0f;
 };
 
 

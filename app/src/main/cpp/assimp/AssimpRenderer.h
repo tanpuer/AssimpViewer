@@ -26,6 +26,10 @@ public:
 
     void assimpViewerDoFrame();
 
+    void setScroll(int scrollX, int scrollY);
+
+    void setScale(int scale);
+
 private:
 
     egl_core *eglCore;

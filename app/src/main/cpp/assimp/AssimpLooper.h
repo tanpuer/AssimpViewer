@@ -14,15 +14,21 @@ class AssimpLooper : public Looper {
 public:
 
     enum {
-        kMsgAssmipViewerCreated,
+        kMsgAssimpViewerCreated,
         kMsgAssimpViewerChanged,
-        kMsgAssmipViewerDestroyed,
-        kMsgAssmipViewerDoFrame
+        kMsgAssimpViewerDestroyed,
+        kMsgAssimpViewerDoFrame,
+        kMsgAssimpViewerScroll,
+        kMsgAssimpViewerScale
     };
 
     AssimpLooper(ANativeWindow *nativeWindow);
 
     virtual void handleMessage(LooperMessage *msg);
+
+    void setScroll(int scrollX, int scrollY);
+
+    void setScale(int scale);
 
 private:
 

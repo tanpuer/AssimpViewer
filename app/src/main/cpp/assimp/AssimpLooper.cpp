@@ -7,7 +7,7 @@
 
 void AssimpLooper::handleMessage(Looper::LooperMessage *msg) {
     switch (msg->what) {
-        case kMsgAssmipViewerCreated: {
+        case kMsgAssimpViewerCreated: {
             renderer = new AssimpRenderer();
             renderer->assmipViewerCreated(nativeWindow);
             break;
@@ -18,16 +18,28 @@ void AssimpLooper::handleMessage(Looper::LooperMessage *msg) {
             }
             break;
         }
-        case kMsgAssmipViewerDestroyed: {
+        case kMsgAssimpViewerDestroyed: {
             if (renderer != nullptr) {
                 renderer->assmipViewerDestroyed();
             }
             quit();
             break;
         }
-        case kMsgAssmipViewerDoFrame: {
+        case kMsgAssimpViewerDoFrame: {
             if (renderer != nullptr) {
                 renderer->assimpViewerDoFrame();
+            }
+            break;
+        }
+        case kMsgAssimpViewerScroll: {
+            if (renderer != nullptr) {
+                renderer->setScroll(msg->arg1, msg->arg2);
+            }
+            break;
+        }
+        case kMsgAssimpViewerScale: {
+            if (renderer != nullptr) {
+                renderer->setScale(msg->arg1);
             }
             break;
         }
@@ -40,4 +52,16 @@ void AssimpLooper::handleMessage(Looper::LooperMessage *msg) {
 
 AssimpLooper::AssimpLooper(ANativeWindow *nativeWindow) {
     this->nativeWindow = nativeWindow;
+}
+
+void AssimpLooper::setScroll(int scrollX, int scrollY) {
+    if (renderer != nullptr) {
+        renderer->setScroll(scrollX, scrollY);
+    }
+}
+
+void AssimpLooper::setScale(int scale) {
+    if (renderer != nullptr) {
+        renderer->setScale(scale);
+    }
 }

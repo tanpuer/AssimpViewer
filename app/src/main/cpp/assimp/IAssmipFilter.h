@@ -28,6 +28,14 @@ public:
 
     bool fileExist(const std::string& filename);
 
+    virtual void setScroll(int scrollX, int scrollY);
+
+    virtual void setScale(int scale);
+
+    int scrollX = 0;
+    int scrollY = 0;
+    float scaleIndex = 1.0f;
+
 };
 
 
