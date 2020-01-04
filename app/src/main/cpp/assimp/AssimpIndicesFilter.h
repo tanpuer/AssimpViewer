@@ -10,7 +10,11 @@
 
 class AssimpIndicesFilter : public AssimpBaseFilter {
 
+public:
+    void doFrame() override;
 
+protected:
+    void recursiveGenBuffers(const struct aiScene *sc, const struct aiNode *nd) override;
 
 };
 

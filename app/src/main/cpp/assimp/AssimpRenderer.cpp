@@ -7,6 +7,7 @@
 #include "AssimpRenderer.h"
 #include "AssimpBaseFilter.h"
 #include "AssimpSkeletalFilter.h"
+#include "AssimpIndicesFilter.h"
 
 AssimpRenderer::AssimpRenderer() {
 
@@ -32,7 +33,8 @@ void AssimpRenderer::assmipViewerCreated(ANativeWindow *nativeWindow) {
     glEnable(GL_BLEND);
 
 //    filter = new AssimpBaseFilter();
-    filter = new AssimpSkeletalFilter();
+    filter = new AssimpIndicesFilter();
+//    filter = new AssimpSkeletalFilter();
     filter->init();
 }
 

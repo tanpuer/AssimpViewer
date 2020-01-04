@@ -29,6 +29,8 @@ struct DrawObject {
     int triangleSize;
     GLuint textureId;
     GLuint boneBuffer;
+    GLuint indicesBuffer;
+    GLuint numIndices;
 };
 
 enum SHADER_ATTRIBUTES {
