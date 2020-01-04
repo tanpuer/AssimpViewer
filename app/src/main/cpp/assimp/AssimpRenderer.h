@@ -7,10 +7,9 @@
 
 
 #include <android/native_window.h>
-#include <window_surface.h>
-#include "IAssmipFilter.h"
+#include "BaseRenderer.h"
 
-class AssimpRenderer {
+class AssimpRenderer : public BaseRenderer{
 
 public:
 
@@ -18,25 +17,7 @@ public:
 
     ~AssimpRenderer();
 
-    void assmipViewerCreated(ANativeWindow *nativeWindow);
-
-    void assmipViewerChanged(int width, int height);
-
-    void assmipViewerDestroyed();
-
-    void assimpViewerDoFrame();
-
-    void setScroll(int scrollX, int scrollY);
-
-    void setScale(int scale);
-
-private:
-
-    egl_core *eglCore;
-
-    window_surface *windowSurface;
-
-    IAssmipFilter *filter;
+    IFilter *initFilter() override;
 
 };
 

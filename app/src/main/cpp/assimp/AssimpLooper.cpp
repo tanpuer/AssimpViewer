@@ -9,25 +9,25 @@ void AssimpLooper::handleMessage(Looper::LooperMessage *msg) {
     switch (msg->what) {
         case kMsgAssimpViewerCreated: {
             renderer = new AssimpRenderer();
-            renderer->assmipViewerCreated(nativeWindow);
+            renderer->viewerCreated(nativeWindow);
             break;
         }
         case kMsgAssimpViewerChanged: {
             if (renderer != nullptr) {
-                renderer->assmipViewerChanged(msg->arg1, msg->arg2);
+                renderer->viewerChanged(msg->arg1, msg->arg2);
             }
             break;
         }
         case kMsgAssimpViewerDestroyed: {
             if (renderer != nullptr) {
-                renderer->assmipViewerDestroyed();
+                renderer->viewerDestroyed();
             }
             quit();
             break;
         }
         case kMsgAssimpViewerDoFrame: {
             if (renderer != nullptr) {
-                renderer->assimpViewerDoFrame();
+                renderer->viewerDoFrame();
             }
             break;
         }

@@ -2,15 +2,15 @@
 // Created by templechen on 2020-01-01.
 //
 
-#ifndef ASSIMPVIEWER_IASSMIPFILTER_H
-#define ASSIMPVIEWER_IASSMIPFILTER_H
+#ifndef ASSIMPVIEWER_IFILTER_H
+#define ASSIMPVIEWER_IFILTER_H
 
 #include "string"
 
 #define GET_STR(x) #x
 #define BUFFER_OFFSET(i) ((char*)NULL + (i))
 
-class IAssmipFilter {
+class IFilter {
 
 public:
 
@@ -39,4 +39,4 @@ public:
 };
 
 
-#endif //ASSIMPVIEWER_IASSMIPFILTER_H
+#endif //ASSIMPVIEWER_IFILTER_H

@@ -7,7 +7,7 @@
 
 
 #include <GLES3/gl3.h>
-#include "IAssmipFilter.h"
+#include "IFilter.h"
 #include "assimp/scene.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
@@ -61,7 +61,7 @@ struct SHADER_MATERIALS {
     float ambientColor[3];
 };
 
-class AssimpBaseFilter : public IAssmipFilter {
+class AssimpBaseFilter : public IFilter {
 
 public:
 
