@@ -47,10 +47,11 @@ public:
 
     void initShaders() override;
 
+    void loadObj() override;
+
 protected:
     void import3DModel() override;
 
-protected:
     void recursiveGenBuffers(const struct aiScene *sc, const struct aiNode *nd) override;
 
     float GetRunningTime();
@@ -63,18 +64,22 @@ protected:
     const aiNodeAnim *FindNodeAnim(const aiAnimation *pAnimation, const string NodeName);
 
     void CalcInterpolatedScaling(aiVector3D &Out, float AnimationTime, const aiNodeAnim *pNodeAnim);
-    void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);
-    void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);
+
+    void
+    CalcInterpolatedRotation(aiQuaternion &Out, float AnimationTime, const aiNodeAnim *pNodeAnim);
+
+    void
+    CalcInterpolatedPosition(aiVector3D &Out, float AnimationTime, const aiNodeAnim *pNodeAnim);
 
     uint FindScaling(float AnimationTime, const aiNodeAnim *pNodeAnim);
+
     uint FindRotation(float AnimationTime, const aiNodeAnim *pNodeAnim);
-    uint FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim);
 
-    GLint GetUniformLocation(const char* pUniformName);
-public:
-    void loadObj() override;
+    uint FindPosition(float AnimationTime, const aiNodeAnim *pNodeAnim);
 
-protected:
+    GLint GetUniformLocation(const char *pUniformName);
+
+private:
 
     GLuint m_boneLocation[MAX_BONES];
     long numVertices;
