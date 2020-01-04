@@ -622,13 +622,13 @@ void AssimpSkeletalFilter::loadObj() {
 }
 
 GLint AssimpSkeletalFilter::GetUniformLocation(const char *pUniformName) {
-    GLuint Location = glGetUniformLocation(shaderProgram->program, pUniformName);
+    GLint location = glGetUniformLocation(shaderProgram->program, pUniformName);
 
-    if (Location == INVALID_UNIFORM_LOCATION) {
-        fprintf(stderr, "Warning! Unable to get the location of uniform '%s'\n", pUniformName);
+    if (location < 0) {
+        ALOGE("Warning! Unable to get the location of uniform %s", pUniformName);
     }
 
-    return Location;
+    return location;
 }
 
 void AssimpSkeletalFilter::initShaders() {

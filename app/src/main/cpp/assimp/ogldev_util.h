@@ -28,7 +28,7 @@
 #include <vector>
 #include <string.h>
 #include <assert.h>
-#include "ogldev_types.h"
+#include "types.h"
 
 using namespace std;
 
