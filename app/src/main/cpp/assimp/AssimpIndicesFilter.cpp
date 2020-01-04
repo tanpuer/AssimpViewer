@@ -77,7 +77,7 @@ void AssimpIndicesFilter::doFrame() {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, drawObject.indicesBuffer);
 //        glDrawArrays(GL_TRIANGLES, 0, 3 * drawObject.triangleSize);
 
-        glDrawElements(GL_TRIANGLES, drawObject.numIndices, GL_INT, BUFFER_OFFSET(0));
+        glDrawElements(GL_TRIANGLES, drawObject.numIndices, GL_UNSIGNED_SHORT, BUFFER_OFFSET(0));
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -130,12 +130,11 @@ void AssimpIndicesFilter::recursiveGenBuffers(const struct aiScene *sc, const st
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         delete[] p;
 
-        unsigned int numIndices = 0;
-        std::vector<int> indices;
+        unsigned int numIndices = mesh->mNumFaces * 3;
+        std::vector<short> indices;
         for (int t = 0; t < mesh->mNumFaces; ++t) {
             const struct aiFace *face = &mesh->mFaces[t];
             assert(face->mNumIndices == 3);
-            numIndices += face->mNumIndices;
             for (int i = 0; i < face->mNumIndices; ++i) {
                 indices.push_back(face->mIndices[i]);
             }
@@ -143,7 +142,7 @@ void AssimpIndicesFilter::recursiveGenBuffers(const struct aiScene *sc, const st
         GLuint indiceBuffer;
         glGenBuffers(1, &indiceBuffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indiceBuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices, &indices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * indices.size(), &indices[0], GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
         aiString path;
