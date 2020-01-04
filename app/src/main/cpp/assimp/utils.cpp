@@ -31,7 +31,7 @@
 #include <errno.h>
 #include <stdarg.h>
 
-#include "ogldev_util.h"
+#include "utils.h"
 
 bool ReadFile(const char* pFileName, string& outFile)
 {
