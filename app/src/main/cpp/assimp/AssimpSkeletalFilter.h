@@ -18,8 +18,8 @@ class AssimpSkeletalFilter : public AssimpBaseFilter {
 
 public:
     struct VertexBoneData {
-        float IDs[NUM_BONES_PER_VEREX];
-        float Weights[NUM_BONES_PER_VEREX];
+        GLfloat IDs[NUM_BONES_PER_VEREX];
+        GLfloat Weights[NUM_BONES_PER_VEREX];
 
         VertexBoneData() {
             Reset();

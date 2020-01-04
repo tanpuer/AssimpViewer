@@ -174,7 +174,7 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
 
         glGenBuffers(1, &boneBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, boneBuffer);
-        glBufferData(GL_ARRAY_BUFFER, totalNumVertices * (sizeof(float) *4 + sizeof(float) *4), &boneBuffer, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, totalNumVertices * sizeof(VertexBoneData), Bones, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         DrawObject drawObject;
@@ -533,7 +533,7 @@ void AssimpSkeletalFilter::doFrame() {
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, boneBuffer);
-        int32_t stride = sizeof(float) * 4 + sizeof(float) * 4;
+        int32_t stride = sizeof(VertexBoneData);
         glVertexAttribPointer(ATTRIB_BONES, 4, GL_FLOAT, GL_FALSE, stride, BUFFER_OFFSET(0));
         glEnableVertexAttribArray(ATTRIB_BONES);
         glVertexAttribPointer(ATTRIB_WEIGHT, 4, GL_FLOAT, GL_FALSE, stride, BUFFER_OFFSET(4 *sizeof(float)));
