@@ -34,7 +34,9 @@ enum SHADER_ATTRIBUTES {
     ATTRIB_VERTEX,
     ATTRIB_NORMAL,
     ATTRIB_UV,
-    ATTRIB_COLOR
+    ATTRIB_COLOR,
+    ATTRIB_BONES,
+    ATTRIB_WEIGHT
 };
 
 struct SHADER_PARAMS {
@@ -74,7 +76,7 @@ public:
 
 protected:
 
-    void import3DModel();
+    virtual void import3DModel();
 
     virtual void recursiveGenBuffers(const struct aiScene *sc, const struct aiNode *nd);
 
