@@ -148,7 +148,7 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
             ALOGE("material index is not in materialIdMap. pls check, %s", path.data);
         }
 
-        VertexBoneData *Bones = new VertexBoneData[totalNumVertices];
+        auto *Bones = new VertexBoneData[totalNumVertices];
         //bones
         for (int i = 0; i < mesh->mNumBones; ++i) {
             uint BoneIndex = 0;
@@ -176,6 +176,7 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
         glBindBuffer(GL_ARRAY_BUFFER, boneBuffer);
         glBufferData(GL_ARRAY_BUFFER, totalNumVertices * sizeof(VertexBoneData), Bones, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+        delete[] Bones;
 
         DrawObject drawObject;
         drawObject.buffer = buffer;
