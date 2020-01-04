@@ -92,48 +92,36 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
 
         int num = mesh->mNumFaces * 3;
         int32_t stride = sizeof(SHADER_VERTEX);
-        auto *p = new SHADER_VERTEX[num];
-        map<int, int> localMap;
-        int index = 0;
-        for (int t = 0; t < mesh->mNumFaces; ++t) {
-            const struct aiFace *face = &mesh->mFaces[t];
-            assert(face->mNumIndices == 3);
-            for (int j = 0; j < face->mNumIndices; ++j) {
-                int vertexIndex = face->mIndices[j];
-                localMap.insert(make_pair(vertexIndex, index));
-                p[index].pos[0] = mesh->mVertices[vertexIndex].x;
-                p[index].pos[1] = mesh->mVertices[vertexIndex].y;
-                p[index].pos[2] = mesh->mVertices[vertexIndex].z;
 
-//                p[index].pos[0] = mesh->mVertices[vertexIndex].x / 100;
-//                p[index].pos[1] = mesh->mVertices[vertexIndex].y / 100;
-//                p[index].pos[2] = mesh->mVertices[vertexIndex].z / 100;
-                if (mesh->HasNormals()) {
-                    p[index].normal[0] = mesh->mNormals[vertexIndex].x;
-                    p[index].normal[1] = mesh->mNormals[vertexIndex].y;
-                    p[index].normal[2] = mesh->mNormals[vertexIndex].z;
-                } else {
-                    p[index].normal[0] = 0.0;
-                    p[index].normal[1] = 0.0;
-                    p[index].normal[2] = 0.0;
-                }
-                if (mesh->HasVertexColors(0)) {
-                    p[index].color[0] = mesh->mColors[0][vertexIndex].r;
-                    p[index].color[1] = mesh->mColors[0][vertexIndex].g;
-                    p[index].color[2] = mesh->mColors[0][vertexIndex].b;
-                } else {
-                    p[index].color[0] = 1.0;
-                    p[index].color[1] = 1.0;
-                    p[index].color[2] = 1.0;
-                }
-                if (mesh->HasTextureCoords(0)) {
-                    p[index].uv[0] = mesh->mTextureCoords[0][vertexIndex].x;
-                    p[index].uv[1] = 1 - mesh->mTextureCoords[0][vertexIndex].y;
-                } else {
-                    p[index].uv[0] = 0.0;
-                    p[index].uv[1] = 0.0;
-                }
-                index++;
+        auto *p = new SHADER_VERTEX[mesh->mNumVertices];
+        for (int i = 0; i < mesh->mNumVertices; ++i) {
+            p[i].pos[0] = mesh->mVertices[i].x;
+            p[i].pos[1] = mesh->mVertices[i].y;
+            p[i].pos[2] = mesh->mVertices[i].z;
+            if (mesh->HasNormals()) {
+                p[i].normal[0] = mesh->mNormals[i].x;
+                p[i].normal[1] = mesh->mNormals[i].y;
+                p[i].normal[2] = mesh->mNormals[i].z;
+            } else {
+                p[i].normal[0] = 0.0;
+                p[i].normal[1] = 0.0;
+                p[i].normal[2] = 0.0;
+            }
+            if (mesh->HasVertexColors(0)) {
+                p[i].color[0] = mesh->mColors[0][i].r;
+                p[i].color[1] = mesh->mColors[0][i].g;
+                p[i].color[2] = mesh->mColors[0][i].b;
+            } else {
+                p[i].color[0] = 0.0;
+                p[i].color[1] = 0.0;
+                p[i].color[2] = 0.0;
+            }
+            if (mesh->HasTextureCoords(0)) {
+                p[i].uv[0] = mesh->mTextureCoords[0][i].x;
+                p[i].uv[1] = 1 - mesh->mTextureCoords[0][i].y;
+            } else {
+                p[i].uv[0] = 0.0;
+                p[i].uv[1] = 0.0;
             }
         }
 
@@ -169,9 +157,7 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
             for (uint j = 0; j < mesh->mBones[i]->mNumWeights; j++) {
                 long vertexId = mesh->mBones[i]->mWeights[j].mVertexId;
                 float Weight = mesh->mBones[i]->mWeights[j].mWeight;
-                if (localMap.find(vertexId) != localMap.end()) {
-                    Bones[localMap[vertexId]].AddBoneData(BoneIndex, Weight);
-                }
+                Bones[vertexId].AddBoneData(BoneIndex, Weight);
             }
         }
 
@@ -182,12 +168,29 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         delete[] Bones;
 
+        unsigned int numIndices = mesh->mNumFaces * 3;
+        std::vector<short> indices;
+        for (int t = 0; t < mesh->mNumFaces; ++t) {
+            const struct aiFace *face = &mesh->mFaces[t];
+            assert(face->mNumIndices == 3);
+            for (int i = 0; i < face->mNumIndices; ++i) {
+                indices.push_back(face->mIndices[i]);
+            }
+        }
+        GLuint indiceBuffer;
+        glGenBuffers(1, &indiceBuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indiceBuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * indices.size(), &indices[0], GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
         DrawObject drawObject;
         drawObject.buffer = buffer;
         drawObject.textureName = path.data;
         drawObject.triangleSize = num / 3;
         drawObject.textureId = *textureIdMap[path.data];
         drawObject.boneBuffer = boneBuffer;
+        drawObject.indicesBuffer = indiceBuffer;
+        drawObject.numIndices = numIndices;
         (&drawObjects)->push_back(drawObject);
         drawCall++;
 
@@ -548,7 +551,10 @@ void AssimpSkeletalFilter::doFrame() {
             glEnableVertexAttribArray(ATTRIB_WEIGHT);
         }
 
-        glDrawArrays(GL_TRIANGLES, 0, 3 * drawObject.triangleSize);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, drawObject.indicesBuffer);
+
+        glDrawElements(GL_TRIANGLES, drawObject.numIndices, GL_UNSIGNED_SHORT, BUFFER_OFFSET(0));
+
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindTexture(GL_TEXTURE_2D, 0);

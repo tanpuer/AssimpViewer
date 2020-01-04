@@ -76,15 +76,12 @@ public:
 
 protected:
 
-    std::map<const char *, const aiNode *> mBoneNodesByName;
     GLuint m_boneLocation[MAX_BONES];
-//    vector<VertexBoneData> Bones;
     long numVertices;
     map<string, uint> m_BoneMapping;
     int m_NumBones;
     vector<BoneInfo> m_BoneInfo;
     long totalNumVertices;
-
     Matrix4f m_GlobalInverseTransform;
     long long m_startTime;
 };
