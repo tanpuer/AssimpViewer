@@ -79,10 +79,12 @@ void AssimpSkeletalFilter::VertexBoneData::AddBoneData(uint BoneID, float Weight
             Weights[i] = Weight;
             return;
         }
+        ALOGE("111111 %d %f", BoneID, Weight);
     }
 
     // should never get here - more bones than we have space for
-//    assert(0);
+//
+    assert(0);
 }
 
 void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const struct aiNode *nd) {
