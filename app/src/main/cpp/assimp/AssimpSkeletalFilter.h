@@ -74,7 +74,7 @@ protected:
 public:
     void loadObj() override;
 
-private:
+protected:
 
     std::map<const char *, const aiNode *> mBoneNodesByName;
     GLuint m_boneLocation[MAX_BONES];

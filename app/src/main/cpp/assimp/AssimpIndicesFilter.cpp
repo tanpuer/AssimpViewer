@@ -75,7 +75,6 @@ void AssimpIndicesFilter::doFrame() {
         }
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, drawObject.indicesBuffer);
-//        glDrawArrays(GL_TRIANGLES, 0, 3 * drawObject.triangleSize);
 
         glDrawElements(GL_TRIANGLES, drawObject.numIndices, GL_UNSIGNED_SHORT, BUFFER_OFFSET(0));
 
