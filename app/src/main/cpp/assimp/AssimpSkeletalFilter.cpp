@@ -172,6 +172,7 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
             }
         }
 
+        GLuint boneBuffer;
         glGenBuffers(1, &boneBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, boneBuffer);
         glBufferData(GL_ARRAY_BUFFER, totalNumVertices * sizeof(VertexBoneData), Bones, GL_STATIC_DRAW);
@@ -183,6 +184,7 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
         drawObject.textureName = path.data;
         drawObject.triangleSize = num / 3;
         drawObject.textureId = *textureIdMap[path.data];
+        drawObject.boneBuffer = boneBuffer;
         (&drawObjects)->push_back(drawObject);
         drawCall++;
 
@@ -533,12 +535,15 @@ void AssimpSkeletalFilter::doFrame() {
             glUniform1i(shaderProgram->samplerObj, textureId - 1);
         }
 
-        glBindBuffer(GL_ARRAY_BUFFER, boneBuffer);
-        int32_t stride = sizeof(VertexBoneData);
-        glVertexAttribPointer(ATTRIB_BONES, 4, GL_FLOAT, GL_FALSE, stride, BUFFER_OFFSET(0));
-        glEnableVertexAttribArray(ATTRIB_BONES);
-        glVertexAttribPointer(ATTRIB_WEIGHT, 4, GL_FLOAT, GL_FALSE, stride, BUFFER_OFFSET(4 *sizeof(float)));
-        glEnableVertexAttribArray(ATTRIB_WEIGHT);
+        if (drawObject.boneBuffer > 0) {
+            glBindBuffer(GL_ARRAY_BUFFER, drawObject.boneBuffer);
+            int32_t stride = sizeof(VertexBoneData);
+            glVertexAttribPointer(ATTRIB_BONES, 4, GL_FLOAT, GL_FALSE, stride, BUFFER_OFFSET(0));
+            glEnableVertexAttribArray(ATTRIB_BONES);
+            glVertexAttribPointer(ATTRIB_WEIGHT, 4, GL_FLOAT, GL_FALSE, stride,
+                                  BUFFER_OFFSET(4 * sizeof(float)));
+            glEnableVertexAttribArray(ATTRIB_WEIGHT);
+        }
 
         glDrawArrays(GL_TRIANGLES, 0, 3 * drawObject.triangleSize);
 

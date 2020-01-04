@@ -87,7 +87,6 @@ private:
 
     Matrix4f m_GlobalInverseTransform;
     long long m_startTime;
-    GLuint boneBuffer;
 };
 
 

@@ -28,6 +28,7 @@ struct DrawObject {
     std::string textureName;
     int triangleSize;
     GLuint textureId;
+    GLuint boneBuffer;
 };
 
 enum SHADER_ATTRIBUTES {
