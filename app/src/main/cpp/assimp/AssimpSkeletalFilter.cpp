@@ -31,10 +31,10 @@ static const char *SKELETAL_VERTEX_SHADER = GET_STR(
         uniform mat4 gBones[MAX_BONES];
         void main(void) {
             vMyColor = myColor;
-            mat4 BoneTransform = gBones[int(BoneIDs[0] + 0.1)] * Weights[0];
-            BoneTransform += gBones[int(BoneIDs[1] + 0.1)] * Weights[1];
-            BoneTransform += gBones[int(BoneIDs[2] + 0.1)] * Weights[2];
-            BoneTransform += gBones[int(BoneIDs[3] + 0.1)] * Weights[3];
+            mat4 BoneTransform = gBones[int(BoneIDs[0])] * Weights[0];
+            BoneTransform += gBones[int(BoneIDs[1])] * Weights[1];
+            BoneTransform += gBones[int(BoneIDs[2])] * Weights[2];
+            BoneTransform += gBones[int(BoneIDs[3])] * Weights[3];
             highp vec4 p = BoneTransform * vec4(myVertex,1);
 //            highp vec4 p = vec4(myVertex,1);
             gl_Position = uPMatrix * p;
@@ -82,7 +82,7 @@ void AssimpSkeletalFilter::VertexBoneData::AddBoneData(uint BoneID, float Weight
     }
 
     // should never get here - more bones than we have space for
-    assert(0);
+//    assert(0);
 }
 
 void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const struct aiNode *nd) {
@@ -92,13 +92,14 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
         int num = mesh->mNumFaces * 3;
         int32_t stride = sizeof(SHADER_VERTEX);
         auto *p = new SHADER_VERTEX[num];
+        map<int, int> localMap;
         int index = 0;
         for (int t = 0; t < mesh->mNumFaces; ++t) {
             const struct aiFace *face = &mesh->mFaces[t];
             assert(face->mNumIndices == 3);
             for (int j = 0; j < face->mNumIndices; ++j) {
                 int vertexIndex = face->mIndices[j];
-
+                localMap.insert(make_pair(vertexIndex, index));
                 p[index].pos[0] = mesh->mVertices[vertexIndex].x;
                 p[index].pos[1] = mesh->mVertices[vertexIndex].y;
                 p[index].pos[2] = mesh->mVertices[vertexIndex].z;
@@ -165,10 +166,11 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
             }
 
             for (uint j = 0; j < mesh->mBones[i]->mNumWeights; j++) {
-//                uint VertexID = m_Entries[MeshIndex].BaseVertex + mesh->mBones[i]->mWeights[j].mVertexId;
-                uint VertexID = numVertices + mesh->mBones[i]->mWeights[j].mVertexId;
+                long vertexId = mesh->mBones[i]->mWeights[j].mVertexId;
                 float Weight = mesh->mBones[i]->mWeights[j].mWeight;
-                Bones[VertexID].AddBoneData(BoneIndex, Weight);
+                if (localMap.find(vertexId) != localMap.end()) {
+                    Bones[localMap[vertexId]].AddBoneData(BoneIndex, Weight);
+                }
             }
         }
 
