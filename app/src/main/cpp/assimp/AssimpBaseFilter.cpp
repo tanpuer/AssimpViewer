@@ -69,7 +69,27 @@ void AssimpBaseFilter::init() {
 }
 
 void AssimpBaseFilter::release() {
-
+    for (int i = 0; i < drawObjects.size(); ++i) {
+        DrawObject drawObject = drawObjects[i];
+        if (drawObject.buffer > 0) {
+            glDeleteBuffers(1, &drawObject.buffer);
+        }
+        if (drawObject.indicesBuffer > 0) {
+            glDeleteBuffers(1, &drawObject.indicesBuffer);
+        }
+        if (drawObject.boneBuffer > 0) {
+            glDeleteBuffers(1, &drawObject.boneBuffer);
+        }
+        if (drawObject.textureId > 0) {
+            glDeleteTextures(1, &drawObject.textureId);
+        }
+    }
+    if (shaderProgram != nullptr) {
+        glDeleteProgram(shaderProgram->program);
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
+        shaderProgram = nullptr;
+    }
 }
 
 void AssimpBaseFilter::doFrame() {
