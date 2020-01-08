@@ -505,7 +505,7 @@ void AssimpSkeletalFilter::doFrame() {
     glUniform3f(shaderProgram->light0, 100.f, -200.f, -6000.f);
 
     //animation
-    if (scene->mNumAnimations > 0) {
+    if (scene->HasAnimations()) {
         vector<Matrix4f> Transforms;
         float RunningTime = GetRunningTime();
         BoneTransform(RunningTime, Transforms);
@@ -618,7 +618,7 @@ void AssimpSkeletalFilter::loadObj() {
     shaderProgram->samplerObj = glGetUniformLocation(program, "samplerObj");
     shaderProgram->program = program;
 
-    if (scene->mNumAnimations > 0) {
+    if (scene->HasAnimations()) {
         for (unsigned int i = 0; i < ARRAY_SIZE_IN_ELEMENTS(m_boneLocation); i++) {
             char Name[128];
             memset(Name, 0, sizeof(Name));
@@ -639,7 +639,7 @@ GLint AssimpSkeletalFilter::GetUniformLocation(const char *pUniformName) {
 }
 
 void AssimpSkeletalFilter::initShaders() {
-    if (scene->mNumAnimations > 0) {
+    if (scene->HasAnimations()) {
         vertexShader = loadShader(GL_VERTEX_SHADER, SKELETAL_VERTEX_SHADER);
         fragmentShader = loadShader(GL_FRAGMENT_SHADER, SKELETAL_FRAGMEMT_SHADER);
     } else {
