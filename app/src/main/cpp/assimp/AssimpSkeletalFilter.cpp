@@ -90,7 +90,7 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
     for (int i = 0; i < nd->mNumMeshes; ++i) {
         const struct aiMesh *mesh = scene->mMeshes[nd->mMeshes[i]];
 
-        int num = mesh->mNumFaces * 3;
+        int num = mesh->mNumVertices;
         int32_t stride = sizeof(SHADER_VERTEX);
 
         auto *p = new SHADER_VERTEX[mesh->mNumVertices];
@@ -203,6 +203,9 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
 
 void AssimpSkeletalFilter::import3DModel() {
     const std::string filePath = "/sdcard/cowboy.dae";
+//    const std::string filePath = "/sdcard/11803_Airplane_v1_l1.obj";
+//    const std::string filePath = "/sdcard/batman.obj";
+//    const std::string filePath = "/sdcard/Japanese_Temple.obj";
     assert(fileExist(filePath));
     scene = importer.ReadFile(filePath, aiProcessPreset_TargetRealtime_Quality);
     if (!scene) {
@@ -502,13 +505,15 @@ void AssimpSkeletalFilter::doFrame() {
     glUniform3f(shaderProgram->light0, 100.f, -200.f, -6000.f);
 
     //animation
-    vector<Matrix4f> Transforms;
-    float RunningTime = GetRunningTime();
-    BoneTransform(RunningTime, Transforms);
-    for (uint i = 0; i < Transforms.size(); i++) {
-        assert(i < MAX_BONES);
-        //Transform.Print();
-        glUniformMatrix4fv(m_boneLocation[i], 1, GL_TRUE, (const GLfloat *) Transforms[i]);
+    if (scene->mNumAnimations > 0) {
+        vector<Matrix4f> Transforms;
+        float RunningTime = GetRunningTime();
+        BoneTransform(RunningTime, Transforms);
+        for (uint i = 0; i < Transforms.size(); i++) {
+            assert(i < MAX_BONES);
+            //Transform.Print();
+            glUniformMatrix4fv(m_boneLocation[i], 1, GL_TRUE, (const GLfloat *) Transforms[i]);
+        }
     }
 
     for (int i = 0; i < drawObjects.size(); ++i) {
@@ -613,11 +618,13 @@ void AssimpSkeletalFilter::loadObj() {
     shaderProgram->samplerObj = glGetUniformLocation(program, "samplerObj");
     shaderProgram->program = program;
 
-    for (unsigned int i = 0; i < ARRAY_SIZE_IN_ELEMENTS(m_boneLocation); i++) {
-        char Name[128];
-        memset(Name, 0, sizeof(Name));
-        SNPRINTF(Name, sizeof(Name), "gBones[%d]", i);
-        m_boneLocation[i] = GetUniformLocation(Name);
+    if (scene->mNumAnimations > 0) {
+        for (unsigned int i = 0; i < ARRAY_SIZE_IN_ELEMENTS(m_boneLocation); i++) {
+            char Name[128];
+            memset(Name, 0, sizeof(Name));
+            SNPRINTF(Name, sizeof(Name), "gBones[%d]", i);
+            m_boneLocation[i] = GetUniformLocation(Name);
+        }
     }
 }
 
@@ -632,6 +639,10 @@ GLint AssimpSkeletalFilter::GetUniformLocation(const char *pUniformName) {
 }
 
 void AssimpSkeletalFilter::initShaders() {
-    vertexShader = loadShader(GL_VERTEX_SHADER, SKELETAL_VERTEX_SHADER);
-    fragmentShader = loadShader(GL_FRAGMENT_SHADER, SKELETAL_FRAGMEMT_SHADER);
+    if (scene->mNumAnimations > 0) {
+        vertexShader = loadShader(GL_VERTEX_SHADER, SKELETAL_VERTEX_SHADER);
+        fragmentShader = loadShader(GL_FRAGMENT_SHADER, SKELETAL_FRAGMEMT_SHADER);
+    } else {
+        AssimpBaseFilter::initShaders();
+    }
 }
