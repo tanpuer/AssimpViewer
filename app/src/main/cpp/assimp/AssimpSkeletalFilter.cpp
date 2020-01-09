@@ -206,6 +206,7 @@ void AssimpSkeletalFilter::import3DModel() {
 //    const std::string filePath = "/sdcard/11803_Airplane_v1_l1.obj";
 //    const std::string filePath = "/sdcard/batman.obj";
 //    const std::string filePath = "/sdcard/Japanese_Temple.obj";
+//    const std::string filePath = "/sdcard/test1.fbx";
     assert(fileExist(filePath));
     scene = importer.ReadFile(filePath, aiProcessPreset_TargetRealtime_Quality);
     if (!scene) {
