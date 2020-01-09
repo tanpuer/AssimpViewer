@@ -19,6 +19,7 @@ IFilter *AssimpRenderer::initFilter() {
 //    filter = new AssimpBaseFilter();
 //    filter = new AssimpIndicesFilter();
     filter = new AssimpSkeletalFilter();
+    filter->setJavaAssetManager(javaAssetManager, javaVm);
     return filter;
 }
 

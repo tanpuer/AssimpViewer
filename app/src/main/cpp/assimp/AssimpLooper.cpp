@@ -9,6 +9,8 @@ void AssimpLooper::handleMessage(Looper::LooperMessage *msg) {
     switch (msg->what) {
         case kMsgAssimpViewerCreated: {
             renderer = new AssimpRenderer();
+            renderer->javaAssetManager = javaAssetManager;
+            renderer->javaVm = javaVm;
             renderer->viewerCreated(nativeWindow);
             break;
         }
@@ -50,8 +52,10 @@ void AssimpLooper::handleMessage(Looper::LooperMessage *msg) {
     }
 }
 
-AssimpLooper::AssimpLooper(ANativeWindow *nativeWindow) {
+AssimpLooper::AssimpLooper(ANativeWindow *nativeWindow, jobject javaAssetManager, JavaVM *javaVm) {
     this->nativeWindow = nativeWindow;
+    this->javaAssetManager = javaAssetManager;
+    this->javaVm = javaVm;
 }
 
 void AssimpLooper::setScroll(int scrollX, int scrollY) {

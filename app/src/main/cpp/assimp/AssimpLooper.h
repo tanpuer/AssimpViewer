@@ -6,6 +6,7 @@
 #define ASSIMPVIEWER_ASSIMPLOOPER_H
 
 
+#include <jni.h>
 #include "../base/Looper.h"
 #include "AssimpRenderer.h"
 
@@ -22,7 +23,7 @@ public:
         kMsgAssimpViewerScale
     };
 
-    AssimpLooper(ANativeWindow *nativeWindow);
+    AssimpLooper(ANativeWindow *nativeWindow, jobject javaAssetManager, JavaVM *javaVm);
 
     virtual void handleMessage(LooperMessage *msg);
 
@@ -35,6 +36,10 @@ private:
     AssimpRenderer *renderer = nullptr;
 
     ANativeWindow *nativeWindow;
+
+    jobject javaAssetManager;
+
+    JavaVM *javaVm;
 };
 
 

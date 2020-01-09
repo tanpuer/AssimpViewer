@@ -4,13 +4,19 @@
 #include "android/native_window_jni.h"
 
 AssimpLooper *assimpLooper = nullptr;
+jobject assetManagerRef = NULL;
+JavaVM *javaVm;
+
 extern "C" JNIEXPORT void JNICALL
 Java_com_cw_assimpviewer_NativeAssimpView_nativeAssimpCreated(
         JNIEnv *env,
         jobject instance,
-        jobject surface
+        jobject surface,
+        jobject javaAssetManager
 ) {
-    assimpLooper = new AssimpLooper(ANativeWindow_fromSurface(env, surface));
+    assetManagerRef = env->NewGlobalRef(javaAssetManager);
+    assimpLooper = new AssimpLooper(ANativeWindow_fromSurface(env, surface), assetManagerRef,
+                                    javaVm);
     assimpLooper->sendMessage(assimpLooper->kMsgAssimpViewerCreated);
 }
 
@@ -31,6 +37,9 @@ Java_com_cw_assimpviewer_NativeAssimpView_nativeAssimpDestroyed(
         JNIEnv *env,
         jobject instance
 ) {
+    if (assetManagerRef != nullptr) {
+        env->DeleteGlobalRef(assetManagerRef);
+    }
     if (assimpLooper != nullptr) {
         assimpLooper->sendMessage(assimpLooper->kMsgAssimpViewerDestroyed);
     }
@@ -90,4 +99,16 @@ Java_com_cw_assimpviewer_NativeAssimpView_nativeAssimpScaleAsync(
     if (assimpLooper != nullptr) {
         assimpLooper->sendMessage(assimpLooper->kMsgAssimpViewerScale, scale, 0);
     }
+}
+
+//......................................................
+//System
+JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+    JNIEnv *env;
+    if (vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_6) != JNI_OK) {
+        return -1;
+    }
+    javaVm = vm;
+    //ffmpeg mediacodec
+    return JNI_VERSION_1_6;
 }

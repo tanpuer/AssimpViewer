@@ -19,6 +19,10 @@ public:
 
     IFilter *initFilter() override;
 
+    jobject javaAssetManager = NULL;
+
+    JavaVM *javaVm;
+
 };
 
 

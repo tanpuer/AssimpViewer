@@ -7,70 +7,7 @@
 #include <gl_utils.h>
 #include "AssimpSkeletalFilter.h"
 #include "stb_image.h"
-
-static const char *SKELETAL_VERTEX_SHADER = GET_STR(
-        attribute highp vec3 myVertex;
-        attribute highp vec3 myNormal;
-        attribute mediump vec2 myUV;
-        attribute mediump vec4 myBone;
-        varying mediump vec2 texCoord;
-        varying lowp vec4 diffuseLight;
-        varying mediump vec3 position;
-        varying mediump vec3 normal;
-        uniform highp mat4 uMVMatrix;
-        uniform highp mat4 uPMatrix;
-        uniform highp vec3 vLight0;
-        uniform lowp vec4 vMaterialDiffuse;
-        uniform lowp vec3 vMaterialAmbient;
-        uniform lowp vec4 vMaterialSpecular;
-        attribute vec3 myColor;
-        varying vec3 vMyColor;
-        attribute vec4 BoneIDs;
-        attribute highp vec4 Weights;
-        const int MAX_BONES = 100;
-        uniform mat4 gBones[MAX_BONES];
-        void main(void) {
-            vMyColor = myColor;
-            mat4 BoneTransform = gBones[int(BoneIDs[0])] * Weights[0];
-            BoneTransform += gBones[int(BoneIDs[1])] * Weights[1];
-            BoneTransform += gBones[int(BoneIDs[2])] * Weights[2];
-            BoneTransform += gBones[int(BoneIDs[3])] * Weights[3];
-            highp vec4 p = BoneTransform * vec4(myVertex,1);
-//            highp vec4 p = vec4(myVertex,1);
-            gl_Position = uPMatrix * p;
-            texCoord = myUV;
-            highp vec3 worldNormal = vec3(mat3(uMVMatrix[0].xyz, uMVMatrix[1].xyz, uMVMatrix[2].xyz) * myNormal);
-            highp vec3 ecPosition = p.xyz;
-            diffuseLight = dot( worldNormal, normalize(-vLight0+ecPosition)) * vec4(1.0, 1.0, 1.0, 1.0);
-            normal = worldNormal;
-            position = ecPosition;
-        }
-);
-
-static const char *SKELETAL_FRAGMEMT_SHADER = GET_STR(
-        uniform lowp vec3 vMaterialAmbient;
-        uniform lowp vec4 vMaterialSpecular;
-        uniform sampler2D samplerObj;
-        varying mediump vec2 texCoord;
-        varying lowp vec4 diffuseLight;
-        uniform highp vec3   vLight0;
-        varying mediump vec3 position;
-        varying mediump vec3 normal;
-        varying vec3 vMyColor;
-        void main() {
-            mediump vec3 halfVector = normalize(-vLight0 + position);
-            mediump float NdotH = max(dot(normalize(normal), halfVector), 0.0);
-            mediump float fPower = vMaterialSpecular.w;
-            mediump float specular = pow(NdotH, fPower);
-            lowp vec4 colorSpecular = vec4( vMaterialSpecular.xyz * specular, 1);
-            // increase ambient light to brighten the teapot :-)
-//            gl_FragColor = diffuseLight * texture2D(samplerObj, texCoord) +
-//            2.0f * vec4(vMaterialAmbient.xyz, 1.0f) + colorSpecular;
-            gl_FragColor = texture2D(samplerObj, texCoord);
-//            gl_FragColor = vec4(vMyColor, 1.0);
-//            gl_FragColor = mix(texture2D(samplerObj, texCoord), vec4(vMyColor, 1.0), 0.5);
-        }
-);
+#include "AssetManager.h"
 
 void AssimpSkeletalFilter::VertexBoneData::AddBoneData(uint BoneID, float Weight) {
     for (uint i = 0; i < ARRAY_SIZE_IN_ELEMENTS(IDs); i++) {
@@ -641,9 +578,23 @@ GLint AssimpSkeletalFilter::GetUniformLocation(const char *pUniformName) {
 
 void AssimpSkeletalFilter::initShaders() {
     if (scene->HasAnimations()) {
-        vertexShader = loadShader(GL_VERTEX_SHADER, SKELETAL_VERTEX_SHADER);
-        fragmentShader = loadShader(GL_FRAGMENT_SHADER, SKELETAL_FRAGMEMT_SHADER);
+        auto *manager = new AssetManager(env, javaAssetManager);
+        const char *vertexShaderStr = manager->readFile("base_skeletal_vertex_shader.glsl");
+        const char *fragmentShaderStr = manager->readFile("base_skeletal_fragment_shader.glsl");
+        vertexShader = loadShader(GL_VERTEX_SHADER, vertexShaderStr);
+        fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderStr);
     } else {
         AssimpBaseFilter::initShaders();
     }
+}
+
+void AssimpSkeletalFilter::setJavaAssetManager(jobject javaAssetManager, JavaVM *javaVm) {
+    this->javaAssetManager = javaAssetManager;
+    this->javaVm = javaVm;
+    javaVm->AttachCurrentThread(&env, nullptr);
+}
+
+void AssimpSkeletalFilter::release() {
+    AssimpBaseFilter::release();
+    javaVm->DetachCurrentThread();
 }

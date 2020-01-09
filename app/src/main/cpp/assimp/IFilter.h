@@ -5,6 +5,7 @@
 #ifndef ASSIMPVIEWER_IFILTER_H
 #define ASSIMPVIEWER_IFILTER_H
 
+#include <jni.h>
 #include "string"
 
 #define GET_STR(x) #x
@@ -31,6 +32,8 @@ public:
     virtual void setScroll(int scrollX, int scrollY);
 
     virtual void setScale(int scale);
+
+    virtual void setJavaAssetManager(jobject javaAssetManager, JavaVM *javaVm) = 0;
 
     int scrollX = 0;
     int scrollY = 0;

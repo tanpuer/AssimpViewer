@@ -1,6 +1,7 @@
 package com.cw.assimpviewer
 
 import android.content.Context
+import android.content.res.AssetManager
 import android.util.AttributeSet
 import android.view.*
 import com.almeros.android.multitouch.MoveGestureDetector
@@ -36,7 +37,7 @@ class NativeAssimpView : SurfaceView, SurfaceHolder.Callback, Choreographer.Fram
     private var active = false
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
-        nativeAssimpCreated(holder!!.surface)
+        nativeAssimpCreated(holder!!.surface, context.assets)
         Choreographer.getInstance().postFrameCallback(this)
         active = true
         nativeAssimpScrollAsync(
@@ -115,7 +116,7 @@ class NativeAssimpView : SurfaceView, SurfaceHolder.Callback, Choreographer.Fram
         }
     }
 
-    private external fun nativeAssimpCreated(surface: Surface)
+    private external fun nativeAssimpCreated(surface: Surface, assetManager: AssetManager)
     private external fun nativeAssimpChanged(width: Int, height: Int)
     private external fun nativeAssimpDestroyed()
     private external fun nativeAssimpDoFrame()
