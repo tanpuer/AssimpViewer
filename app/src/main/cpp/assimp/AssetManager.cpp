@@ -10,6 +10,7 @@ char *AssetManager::readFile(const char *path) {
     char *fileContent = new char[fileLength + 1];
     AAsset_read(asset, fileContent, fileLength);
     fileContent[fileLength] = '\0';
+    AAsset_close(asset);
     return fileContent;
 }
 
