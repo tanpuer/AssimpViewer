@@ -583,6 +583,8 @@ void AssimpSkeletalFilter::initShaders() {
         const char *fragmentShaderStr = manager->readFile("base_skeletal_fragment_shader.glsl");
         vertexShader = loadShader(GL_VERTEX_SHADER, vertexShaderStr);
         fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderStr);
+        delete vertexShaderStr;
+        delete fragmentShaderStr;
         delete manager;
     } else {
         AssimpBaseFilter::initShaders();
