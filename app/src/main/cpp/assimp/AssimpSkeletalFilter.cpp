@@ -616,7 +616,8 @@ void AssimpSkeletalFilter::getCameraInfo() {
         ALOGD("cameraUp %f %f %f", cameraUp[0], cameraUp[1], cameraUp[2]);
         float zNear = camera->mClipPlaneNear;
         float zFar = camera->mClipPlaneFar;
-        ALOGD("camera clip %f %f", zNear, zFar);
+        float aspect = camera->mAspect;
+        ALOGD("camera clip %f %f %f", zNear, zFar, aspect);
         return;
     }
     ALOGE("no camera info in the model");
