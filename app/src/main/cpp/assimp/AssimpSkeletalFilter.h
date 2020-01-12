@@ -83,6 +83,8 @@ protected:
 
     GLint GetUniformLocation(const char *pUniformName);
 
+    void getCameraInfo();
+
 private:
 
     GLuint m_boneLocation[MAX_BONES];

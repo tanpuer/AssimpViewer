@@ -101,7 +101,8 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
         GLuint boneBuffer;
         glGenBuffers(1, &boneBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, boneBuffer);
-        glBufferData(GL_ARRAY_BUFFER, totalNumVertices * sizeof(VertexBoneData), Bones, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, totalNumVertices * sizeof(VertexBoneData), Bones,
+                     GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         delete[] Bones;
 
@@ -117,7 +118,8 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
         GLuint indiceBuffer;
         glGenBuffers(1, &indiceBuffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indiceBuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * indices.size(), &indices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * indices.size(), &indices[0],
+                     GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
         DrawObject drawObject;
@@ -218,6 +220,7 @@ void AssimpSkeletalFilter::import3DModel() {
     recursiveGenBuffers(scene, scene->mRootNode);
 
     m_startTime = GetCurrentTimeMillis();
+    getCameraInfo();
 }
 
 float AssimpSkeletalFilter::GetRunningTime() {
@@ -600,4 +603,21 @@ void AssimpSkeletalFilter::setJavaAssetManager(jobject javaAssetManager, JavaVM 
 void AssimpSkeletalFilter::release() {
     AssimpBaseFilter::release();
     javaVm->DetachCurrentThread();
+}
+
+void AssimpSkeletalFilter::getCameraInfo() {
+    if (scene->HasCameras()) {
+        aiCamera *camera = scene->mCameras[0];
+        aiVector3D cameraPos = camera->mPosition;
+        ALOGD("cameraPos %f %f %f", cameraPos[0], cameraPos[1], cameraPos[2]);
+        aiVector3D cameraLookAt = camera->mLookAt;
+        ALOGD("cameraLookAt %f %f %f", cameraLookAt[0], cameraLookAt[1], cameraLookAt[2]);
+        aiVector3D cameraUp = camera->mUp;
+        ALOGD("cameraUp %f %f %f", cameraUp[0], cameraUp[1], cameraUp[2]);
+        float zNear = camera->mClipPlaneNear;
+        float zFar = camera->mClipPlaneFar;
+        ALOGD("camera clip %f %f", zNear, zFar);
+        return;
+    }
+    ALOGE("no camera info in the model");
 }
