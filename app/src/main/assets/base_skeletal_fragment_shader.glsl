@@ -1,3 +1,4 @@
+precision mediump float;
 uniform lowp vec3 vMaterialAmbient;
 uniform lowp vec4 vMaterialSpecular;
 uniform sampler2D samplerObj;

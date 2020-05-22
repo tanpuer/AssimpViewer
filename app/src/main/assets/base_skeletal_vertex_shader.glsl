@@ -1,3 +1,4 @@
+precision mediump float;
 attribute highp vec3 myVertex;
 attribute highp vec3 myNormal;
 attribute mediump vec2 myUV;
