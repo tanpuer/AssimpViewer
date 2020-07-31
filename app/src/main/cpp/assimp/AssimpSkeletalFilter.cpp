@@ -512,7 +512,6 @@ void AssimpSkeletalFilter::loadObj() {
     import3DModel();
 
     initShaders();
-    initShaders();
 
     GLuint program;
     GLint linked;
