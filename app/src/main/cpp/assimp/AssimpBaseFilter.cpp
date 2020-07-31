@@ -190,7 +190,6 @@ void AssimpBaseFilter::loadObj() {
     import3DModel();
 
     initShaders();
-    initShaders();
 
     GLuint program;
     GLint linked;
