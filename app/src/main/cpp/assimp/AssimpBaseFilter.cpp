@@ -25,7 +25,7 @@ static const char *VERTEX_SHADER = GET_STR(
         uniform lowp vec3 vMaterialAmbient;
         uniform lowp vec4 vMaterialSpecular;
         attribute vec3 myColor;
-        varying vec3 vMyColor;
+        varying mediump vec3 vMyColor;
         void main(void) {
             vMyColor = myColor;
             highp vec4 p = vec4(myVertex,1);
@@ -48,7 +48,7 @@ static const char *FRAGMEMT_SHADER = GET_STR(
         uniform highp vec3   vLight0;
         varying mediump vec3 position;
         varying mediump vec3 normal;
-        varying vec3 vMyColor;
+        varying mediump vec3 vMyColor;
         void main() {
             mediump vec3 halfVector = normalize(-vLight0 + position);
             mediump float NdotH = max(dot(normalize(normal), halfVector), 0.0);
