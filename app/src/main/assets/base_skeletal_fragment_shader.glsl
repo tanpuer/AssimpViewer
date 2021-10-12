@@ -15,8 +15,8 @@ void main() {
     mediump float specular = pow(NdotH, fPower);
     lowp vec4 colorSpecular = vec4(vMaterialSpecular.xyz * specular, 1);
     // increase ambient light to brighten the teapot :-)
-    //            gl_FragColor = diffuseLight * texture2D(samplerObj, texCoord) +
-    //            2.0f * vec4(vMaterialAmbient.xyz, 1.0f) + colorSpecular;
+//                gl_FragColor = diffuseLight * texture2D(samplerObj, texCoord) +
+//                2.0 * vec4(vMaterialAmbient.xyz, 1.0);
     gl_FragColor = texture2D(samplerObj, texCoord);
     //            gl_FragColor = vec4(vMyColor, 1.0);
     //            gl_FragColor = mix(texture2D(samplerObj, texCoord), vec4(vMyColor, 1.0), 0.5);
