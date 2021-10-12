@@ -6,6 +6,9 @@ show 3D models with skeleton animations using Assimp
 ![img](https://github.com/tanpuer/AssimpViewer/blob/master/output.gif)
 
 编译脚本，仅供参考
+1. 下载Assimp，master分支，assimp目录下建立此脚本文件，再创建buildAndroid文件夹。
+2. 将contrib/unzip/crypt.h中的typedef unsigned long z_crc_t;注释掉，不然会报错。
+3. 运行脚本，就能在buildAndroid目录下能拿到so和头文件啦。
 
 #!/bin/bash
 SDK_PATH=/Users/dzsb-000848/Library/Android/sdk
