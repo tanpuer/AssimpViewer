@@ -2,7 +2,7 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2019, assimp team
+Copyright (c) 2006-2021, assimp team
 
 
 All rights reserved.
@@ -47,7 +47,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AI_POSTPROCESS_H_INC
 #define AI_POSTPROCESS_H_INC
 
-#include "types.h"
+#include <assimp/types.h>
+
+#ifdef __GNUC__
+#   pragma GCC system_header
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -205,9 +209,14 @@ enum aiPostProcessSteps
     /** <hr>Removes the node graph and pre-transforms all vertices with
     * the local transformation matrices of their nodes.
     *
-    * The output scene still contains nodes, however there is only a
-    * root node with children, each one referencing only one mesh,
-    * and each mesh referencing one material. For rendering, you can
+    * If the resulting scene can be reduced to a single mesh, with a single
+    * material, no lights, and no cameras, then the output scene will contain
+    * only a root node (with no children) that references the single mesh.
+    * Otherwise, the output scene will be reduced to a root node with a single
+    * level of child nodes, each one referencing one mesh, and each mesh
+    * referencing one material.
+    *
+    * In either case, for rendering, you can
     * simply render all meshes in order - you don't need to pay
     * attention to local transformations and the node hierarchy.
     * Animations are removed during this step.
@@ -315,6 +324,19 @@ enum aiPostProcessSteps
      * to enable this step, although the result is not always correct.
     */
     aiProcess_FixInfacingNormals = 0x2000,
+
+
+
+    // -------------------------------------------------------------------------
+    /**
+     * This step generically populates aiBone->mArmature and aiBone->mNode generically
+     * The point of these is it saves you later having to calculate these elements
+     * This is useful when handling rest information or skin information
+     * If you have multiple armatures on your models we strongly recommend enabling this
+     * Instead of writing your own multi-root, multi-armature lookups we have done the
+     * hard work for you :)
+   */
+    aiProcess_PopulateArmatureData = 0x4000,
 
     // -------------------------------------------------------------------------
     /** <hr>This step splits meshes with more than one primitive type in
@@ -438,7 +460,7 @@ enum aiPostProcessSteps
     aiProcess_FindInstances = 0x100000,
 
     // -------------------------------------------------------------------------
-    /** <hr>A postprocessing step to reduce the number of meshes.
+    /** <hr>A post-processing step to reduce the number of meshes.
      *
      *  This will, in fact, reduce the number of draw calls.
      *
@@ -450,7 +472,7 @@ enum aiPostProcessSteps
 
 
     // -------------------------------------------------------------------------
-    /** <hr>A postprocessing step to optimize the scene hierarchy.
+    /** <hr>A post-processing step to optimize the scene hierarchy.
      *
      *  Nodes without animations, bones, lights or cameras assigned are
      *  collapsed and joined.
@@ -514,7 +536,7 @@ enum aiPostProcessSteps
 
     // -------------------------------------------------------------------------
     /** <hr>This step splits meshes with many bones into sub-meshes so that each
-     * su-bmesh has fewer or as many bones as a given limit.
+     * sub-mesh has fewer or as many bones as a given limit.
     */
     aiProcess_SplitByBoneCount  = 0x2000000,
 
@@ -533,6 +555,8 @@ enum aiPostProcessSteps
     */
     aiProcess_Debone  = 0x4000000,
 
+
+
     // -------------------------------------------------------------------------
     /** <hr>This step will perform a global scale of the model.
     *
@@ -541,7 +565,7 @@ enum aiPostProcessSteps
     *  global scaling from your importer settings like in FBX. Use the flag
     *  AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY from the global property table to configure this.
     *
-    *  Use <tt>#AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY</tt> to setup the global scaing factor.
+    *  Use <tt>#AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY</tt> to setup the global scaling factor.
     */
     aiProcess_GlobalScale = 0x8000000,
 
@@ -555,7 +579,7 @@ enum aiPostProcessSteps
      *  of the imported model. And if so, it uses that.
      */
     aiProcess_EmbedTextures  = 0x10000000,
-        
+
     // aiProcess_GenEntityMeshes = 0x100000,
     // aiProcess_OptimizeAnimations = 0x200000
     // aiProcess_FixTexturePaths = 0x200000
@@ -574,6 +598,11 @@ enum aiPostProcessSteps
      * This process gives sense back to aiProcess_JoinIdenticalVertices
      */
     aiProcess_DropNormals = 0x40000000,
+
+    // -------------------------------------------------------------------------
+    /**
+     */
+    aiProcess_GenBoundingBoxes = 0x80000000
 };
 
 
