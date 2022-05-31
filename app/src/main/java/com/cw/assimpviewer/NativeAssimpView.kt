@@ -36,8 +36,8 @@ class NativeAssimpView : SurfaceView, SurfaceHolder.Callback, Choreographer.Fram
 
     private var active = false
 
-    override fun surfaceCreated(holder: SurfaceHolder?) {
-        nativeAssimpCreated(holder!!.surface, context.assets)
+    override fun surfaceCreated(holder: SurfaceHolder) {
+        nativeAssimpCreated(holder.surface, context.assets)
         Choreographer.getInstance().postFrameCallback(this)
         active = true
         nativeAssimpScrollAsync(
@@ -47,11 +47,11 @@ class NativeAssimpView : SurfaceView, SurfaceHolder.Callback, Choreographer.Fram
         nativeAssimpScaleAsync(objScale.toInt())
     }
 
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         nativeAssimpChanged(width, height)
     }
 
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
         active = false
         Choreographer.getInstance().removeFrameCallback(this)
         nativeAssimpDestroyed()
