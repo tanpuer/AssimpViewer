@@ -21,6 +21,7 @@
 
 #include "utils.h"
 #include "math_3d.h"
+#include "assert.h"
 
 Vector3f Vector3f::Cross(const Vector3f& v) const
 {

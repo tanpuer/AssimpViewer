@@ -8,6 +8,7 @@
 
 #include "AssimpBaseFilter.h"
 #include "math_3d.h"
+#include "AssetManager.h"
 
 using namespace std;
 
@@ -98,6 +99,7 @@ private:
     jobject javaAssetManager = NULL;
     JNIEnv *env = nullptr;
     JavaVM *javaVm = nullptr;
+    std::unique_ptr<AssetManager> assetManager;
 };
 
 

@@ -10,9 +10,9 @@ import com.almeros.android.multitouch.ShoveGestureDetector
 
 class NativeAssimpView : SurfaceView, SurfaceHolder.Callback, Choreographer.FrameCallback {
 
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr
@@ -20,16 +20,12 @@ class NativeAssimpView : SurfaceView, SurfaceHolder.Callback, Choreographer.Fram
 
     init {
         holder.addCallback(this)
-        mScaleDetector = ScaleGestureDetector(context.applicationContext, ScaleListener(this))
-        mRotateDetector = RotateGestureDetector(context.applicationContext, RotateListener(this))
-        mMoveDetector = MoveGestureDetector(context.applicationContext, MoveListener(this))
-        mShoveDetector = ShoveGestureDetector(context.applicationContext, ShoveListener(this))
     }
 
-    private var mScaleDetector: ScaleGestureDetector? = null
-    private var mRotateDetector: RotateGestureDetector? = null
-    private var mMoveDetector: MoveGestureDetector? = null
-    private var mShoveDetector: ShoveGestureDetector? = null
+    private var mScaleDetector: ScaleGestureDetector = ScaleGestureDetector(context.applicationContext, ScaleListener(this))
+    private var mRotateDetector: RotateGestureDetector = RotateGestureDetector(context.applicationContext, RotateListener(this))
+    private var mMoveDetector: MoveGestureDetector = MoveGestureDetector(context.applicationContext, MoveListener(this))
+    private var mShoveDetector: ShoveGestureDetector = ShoveGestureDetector(context.applicationContext, ShoveListener(this))
 
     private val screenWidth = resources.displayMetrics.widthPixels
     private val screenHeight = resources.displayMetrics.heightPixels
@@ -64,11 +60,11 @@ class NativeAssimpView : SurfaceView, SurfaceHolder.Callback, Choreographer.Fram
         }
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        mScaleDetector?.onTouchEvent(event)
-        mRotateDetector?.onTouchEvent(event)
-        mMoveDetector?.onTouchEvent(event)
-        mShoveDetector?.onTouchEvent(event)
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        mScaleDetector.onTouchEvent(event)
+        mRotateDetector.onTouchEvent(event)
+        mMoveDetector.onTouchEvent(event)
+        mShoveDetector.onTouchEvent(event)
         return true
     }
 

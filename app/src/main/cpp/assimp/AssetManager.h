@@ -11,9 +11,18 @@ class AssetManager {
 
 public:
 
+    struct FileInfo {
+        const unsigned char *data;
+        long length;
+    };
+
+public:
+
     AssetManager(JNIEnv *env, jobject javaAssetManager);
 
-    char* readFile(const char* path);
+    char *readFile(const char *path);
+
+    FileInfo *readFileFromAssets(const char *path);
 
 private:
 

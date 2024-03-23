@@ -141,25 +141,18 @@ void AssimpSkeletalFilter::recursiveGenBuffers(const struct aiScene *sc, const s
 }
 
 void AssimpSkeletalFilter::import3DModel() {
-    const std::string filePath = "/sdcard/cowboy.dae";
-//    const std::string filePath = "/sdcard/Mesh_Female.fbx";
-//    const std::string filePath = "/sdcard/11803_Airplane_v1_l1.obj";
-//    const std::string filePath = "/sdcard/batman.obj";
-//    const std::string filePath = "/sdcard/Japanese_Temple.obj";
-//    const std::string filePath = "/sdcard/test1.fbx";
-    assert(fileExist(filePath));
-    scene = importer.ReadFile(filePath, aiProcessPreset_TargetRealtime_Quality);
+    auto fileInfo = assetManager->readFileFromAssets("cowboy.dae");
+    scene = importer.ReadFileFromMemory(fileInfo->data, fileInfo->length, 0);
     if (!scene) {
-        ALOGE("load model error %s", filePath.data());
+        ALOGE("load model error")
     }
-    ALOGD("load model success %s", filePath.data());
+    ALOGD("load model success")
 
     if (!scene->HasTextures()) {
-        /* getTexture Filenames and Numb of Textures */
         for (unsigned int m = 0; m < scene->mNumMaterials; m++) {
             int texIndex = 0;
             aiReturn texFound = AI_SUCCESS;
-            aiString path;    // filename
+            aiString path;
             while (texFound == AI_SUCCESS) {
                 texFound = scene->mMaterials[m]->GetTexture(aiTextureType_DIFFUSE, texIndex, &path);
                 textureIdMap[path.data] = NULL; //fill map with textures, pointers still NULL yet
@@ -167,7 +160,6 @@ void AssimpSkeletalFilter::import3DModel() {
             }
         }
         int numTextures = textureIdMap.size();
-        /* create and fill array with GL texture ids */
         textureIds = new GLuint[numTextures];
         glGenTextures(numTextures, textureIds); /* Texture name generation */
         /* get iterator */
@@ -176,13 +168,13 @@ void AssimpSkeletalFilter::import3DModel() {
         for (int i = 0; i < numTextures; i++) {
             //save IL image ID
             std::string filename = (*itr).first;
-            (*itr).second = &textureIds[i]; // save texture id for filename in map
+            (*itr).second = &textureIds[i];
             itr++;
 
-            std::string fileloc = basepath + filename;
             int x, y, comp;
-            unsigned char *data = stbi_load(fileloc.c_str(), &x, &y, &comp, STBI_default);
-
+            auto imageData = assetManager->readFileFromAssets(filename.c_str());
+            unsigned char *data = stbi_load_from_memory(imageData->data, imageData->length, &x, &y,
+                                                        &comp, STBI_default);
             GLuint format = GL_RGB;
             if (comp == 1) {
                 format = GL_LUMINANCE;
@@ -194,7 +186,7 @@ void AssimpSkeletalFilter::import3DModel() {
                 format = GL_RGBA;
             } else {
                 //todo
-                ALOGE("unSupport type %d %s", comp, fileloc.data());
+                ALOGE("unSupport type %d %s", comp, filename.data());
             }
 
             if (nullptr != data) {
@@ -205,9 +197,9 @@ void AssimpSkeletalFilter::import3DModel() {
                 glTexImage2D(GL_TEXTURE_2D, 0, format, x, y, 0, format, GL_UNSIGNED_BYTE, data);
                 glBindTexture(GL_TEXTURE_2D, 0);
                 stbi_image_free(data);
-                ALOGD("load image success %s", fileloc.data());
+                ALOGD("load image success %s", filename.data());
             } else {
-                ALOGE("load image fail %s", fileloc.c_str());
+                ALOGE("load image fail %s", filename.c_str());
             }
         }
     }
@@ -581,14 +573,12 @@ GLint AssimpSkeletalFilter::GetUniformLocation(const char *pUniformName) {
 
 void AssimpSkeletalFilter::initShaders() {
     if (scene->HasAnimations()) {
-        auto *manager = new AssetManager(env, javaAssetManager);
-        const char *vertexShaderStr = manager->readFile("base_skeletal_vertex_shader.glsl");
-        const char *fragmentShaderStr = manager->readFile("base_skeletal_fragment_shader.glsl");
+        const char *vertexShaderStr = assetManager->readFile("base_skeletal_vertex_shader.glsl");
+        const char *fragmentShaderStr = assetManager->readFile("base_skeletal_fragment_shader.glsl");
         vertexShader = loadShader(GL_VERTEX_SHADER, vertexShaderStr);
         fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderStr);
         delete vertexShaderStr;
         delete fragmentShaderStr;
-        delete manager;
     } else {
         AssimpBaseFilter::initShaders();
     }
@@ -598,6 +588,7 @@ void AssimpSkeletalFilter::setJavaAssetManager(jobject javaAssetManager, JavaVM 
     this->javaAssetManager = javaAssetManager;
     this->javaVm = javaVm;
     javaVm->AttachCurrentThread(&env, nullptr);
+    assetManager = std::make_unique<AssetManager>(env, javaAssetManager);
 }
 
 void AssimpSkeletalFilter::release() {

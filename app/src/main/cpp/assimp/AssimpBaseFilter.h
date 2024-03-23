@@ -15,7 +15,7 @@
 #include "map"
 #include "vecmath.h"
 #include "vector"
-
+#include "assert.h"
 struct SHADER_VERTEX {
     float pos[3];
     float normal[3];

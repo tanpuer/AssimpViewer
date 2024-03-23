@@ -6,7 +6,7 @@
 #include <matrix_util.h>
 #include "AssimpIndicesFilter.h"
 #include "native_log.h"
-
+#include "assert.h"
 void AssimpIndicesFilter::doFrame() {
     viewMatrix = ndk_helper::Mat4::LookAt(ndk_helper::Vec3(CAM_X, CAM_Y, CAM_Z / scaleIndex),
                                           ndk_helper::Vec3(0.f, 0.f, 0.f),
