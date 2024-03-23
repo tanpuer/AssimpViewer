@@ -8,14 +8,7 @@ aux_source_directory(src/main/cpp/base srcs)
 aux_source_directory(src/main/cpp/egl srcs)
 aux_source_directory(src/main/cpp/assimp srcs)
 
-add_library( # Sets the name of the library.
-        native-lib
-
-        # Sets the library as a shared library.
-        SHARED
-
-        # Provides a relative path to your source file(s).
-        ${srcs})
+add_library(assimpviewer SHARED ${srcs})
 
 set(JNI_LIBS_DIR ${CMAKE_SOURCE_DIR}/src/main/jniLibs)
 
@@ -37,7 +30,7 @@ include_directories(
 
 find_library(z-lib z)
 
-target_link_libraries(native-lib assmip
+target_link_libraries(assimpviewer assmip
         ${log-lib} ${android-lib}
         android EGL GLESv3 jnigraphics
         ${z-lib}

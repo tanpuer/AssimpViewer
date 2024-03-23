@@ -123,7 +123,7 @@ class NativeAssimpView : SurfaceView, SurfaceHolder.Callback, Choreographer.Fram
 
     companion object {
         init {
-            System.loadLibrary("native-lib")
+            System.loadLibrary("assimpviewer")
         }
     }
 }
