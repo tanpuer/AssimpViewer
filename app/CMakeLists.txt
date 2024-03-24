@@ -5,8 +5,8 @@ find_library(android-lib android)
 
 aux_source_directory(src/main/cpp srcs)
 aux_source_directory(src/main/cpp/base srcs)
-aux_source_directory(src/main/cpp/egl srcs)
 aux_source_directory(src/main/cpp/assimp srcs)
+aux_source_directory(src/main/cpp/app srcs)
 
 add_library(assimpviewer SHARED ${srcs})
 
@@ -24,8 +24,8 @@ include_directories(
         ${JNI_LIBS_DIR}/includes/assmip
 
         src/main/cpp/base
-        src/main/cpp/egl
         src/main/cpp/assimp
+        src/main/cpp/app
 )
 
 find_library(z-lib z)

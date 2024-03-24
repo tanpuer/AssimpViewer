@@ -1,10 +1,3 @@
-//
-// Created by templechen on 2019-09-04.
-//
+#pragma once
 
-#ifndef HYPLAYER_UTILS_H
-#define HYPLAYER_UTILS_H
-
-long javaTimeMillis();
-
-#endif //HYPLAYER_UTILS_H
+long long GetCurrentTimeMillis();

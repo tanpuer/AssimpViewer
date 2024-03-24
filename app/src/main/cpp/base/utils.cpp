@@ -1,12 +1,9 @@
-//
-// Created by templechen on 2019-09-04.
-//
-
 #include <sys/time.h>
 #include "utils.h"
 
-long javaTimeMillis() {
-    timeval time;
-    gettimeofday(&time, nullptr);
-    return long(time.tv_sec) * 1000 + long(time.tv_usec / 1000);
+long long GetCurrentTimeMillis() {
+    timeval t;
+    gettimeofday(&t, NULL);
+    long long ret = t.tv_sec * 1000 + t.tv_usec / 1000;
+    return ret;
 }

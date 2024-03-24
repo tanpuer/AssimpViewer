@@ -1,61 +1,59 @@
 package com.cw.assimpviewer
 
 import android.content.Context
-import android.content.res.AssetManager
 import android.util.AttributeSet
-import android.view.*
+import android.view.Choreographer
+import android.view.MotionEvent
+import android.view.ScaleGestureDetector
+import android.view.SurfaceHolder
+import android.view.SurfaceView
 import com.almeros.android.multitouch.MoveGestureDetector
 import com.almeros.android.multitouch.RotateGestureDetector
 import com.almeros.android.multitouch.ShoveGestureDetector
 
-class NativeAssimpView : SurfaceView, SurfaceHolder.Callback, Choreographer.FrameCallback {
-
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    )
+class AssimpSurfaceView @JvmOverloads constructor(
+    context: Context, attrs: AttributeSet? = null
+) : SurfaceView(context, attrs), SurfaceHolder.Callback, Choreographer.FrameCallback {
 
     init {
         holder.addCallback(this)
     }
 
-    private var mScaleDetector: ScaleGestureDetector = ScaleGestureDetector(context.applicationContext, ScaleListener(this))
-    private var mRotateDetector: RotateGestureDetector = RotateGestureDetector(context.applicationContext, RotateListener(this))
-    private var mMoveDetector: MoveGestureDetector = MoveGestureDetector(context.applicationContext, MoveListener(this))
-    private var mShoveDetector: ShoveGestureDetector = ShoveGestureDetector(context.applicationContext, ShoveListener(this))
+    private var mScaleDetector: ScaleGestureDetector =
+        ScaleGestureDetector(context.applicationContext, ScaleListener(this))
+    private var mRotateDetector: RotateGestureDetector =
+        RotateGestureDetector(context.applicationContext, RotateListener(this))
+    private var mMoveDetector: MoveGestureDetector =
+        MoveGestureDetector(context.applicationContext, MoveListener(this))
+    private var mShoveDetector: ShoveGestureDetector =
+        ShoveGestureDetector(context.applicationContext, ShoveListener(this))
 
     private val screenWidth = resources.displayMetrics.widthPixels
     private val screenHeight = resources.displayMetrics.heightPixels
 
     private var active = false
 
+    private val engine = AssimpEngine()
+
     override fun surfaceCreated(holder: SurfaceHolder) {
-        nativeAssimpCreated(holder.surface, context.assets)
+        engine.create(holder.surface)
         Choreographer.getInstance().postFrameCallback(this)
         active = true
-        nativeAssimpScrollAsync(
-            (objScrollX * 100 / screenWidth * 4).toInt(),
-            (objScrollY * 100 / screenHeight * 4).toInt()
-        )
-        nativeAssimpScaleAsync(objScale.toInt())
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        nativeAssimpChanged(width, height)
+        engine.change(holder.surface, width, height)
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         active = false
         Choreographer.getInstance().removeFrameCallback(this)
-        nativeAssimpDestroyed()
+        engine.destroy(holder.surface)
     }
 
     override fun doFrame(frameTimeNanos: Long) {
         if (active) {
-            nativeAssimpDoFrame()
+            engine.doFrame(frameTimeNanos)
             Choreographer.getInstance().postFrameCallback(this)
         }
     }
@@ -68,19 +66,19 @@ class NativeAssimpView : SurfaceView, SurfaceHolder.Callback, Choreographer.Fram
         return true
     }
 
-    private inner class ScaleListener(val gestureSurfaceView: NativeAssimpView) :
+    private inner class ScaleListener(val gestureSurfaceView: AssimpSurfaceView) :
         ScaleGestureDetector.SimpleOnScaleGestureListener() {
         override fun onScale(detector: ScaleGestureDetector): Boolean {
 //            Log.d(TAG, "scale ${detector.scaleFactor}")
             objScale *= detector.scaleFactor
-            nativeAssimpScale(objScale.toInt())
+            engine.setScale(objScale.toInt())
             return true
         }
     }
 
     private var objScale = 1000000f
 
-    private inner class RotateListener(val gestureSurfaceView: NativeAssimpView) :
+    private inner class RotateListener(val gestureSurfaceView: AssimpSurfaceView) :
         RotateGestureDetector.SimpleOnRotateGestureListener() {
         override fun onRotate(detector: RotateGestureDetector): Boolean {
 //            Log.d(TAG, "rotate ${detector.rotationDegreesDelta}")
@@ -91,12 +89,12 @@ class NativeAssimpView : SurfaceView, SurfaceHolder.Callback, Choreographer.Fram
     private var objScrollX = 0f
     private var objScrollY = 0f
 
-    private inner class MoveListener(val gestureSurfaceView: NativeAssimpView) :
+    private inner class MoveListener(val gestureSurfaceView: AssimpSurfaceView) :
         MoveGestureDetector.SimpleOnMoveGestureListener() {
         override fun onMove(detector: MoveGestureDetector): Boolean {
             objScrollX += detector.focusDelta.x
             objScrollY += detector.focusDelta.y
-            nativeAssimpScroll(
+            engine.setScroll(
                 (objScrollX * 100 / screenWidth * 4).toInt(),
                 (objScrollY * 100 / screenHeight * 4).toInt()
             )
@@ -104,7 +102,7 @@ class NativeAssimpView : SurfaceView, SurfaceHolder.Callback, Choreographer.Fram
         }
     }
 
-    private inner class ShoveListener(val gestureSurfaceView: NativeAssimpView) :
+    private inner class ShoveListener(val gestureSurfaceView: AssimpSurfaceView) :
         ShoveGestureDetector.SimpleOnShoveGestureListener() {
         override fun onShove(detector: ShoveGestureDetector): Boolean {
 //            Log.d(TAG, "shove ${detector.shovePixelsDelta}")
@@ -112,18 +110,5 @@ class NativeAssimpView : SurfaceView, SurfaceHolder.Callback, Choreographer.Fram
         }
     }
 
-    private external fun nativeAssimpCreated(surface: Surface, assetManager: AssetManager)
-    private external fun nativeAssimpChanged(width: Int, height: Int)
-    private external fun nativeAssimpDestroyed()
-    private external fun nativeAssimpDoFrame()
-    private external fun nativeAssimpScroll(objScrollX: Int, objScrollY: Int)
-    private external fun nativeAssimpScrollAsync(objScrollX: Int, objScrollY: Int)
-    private external fun nativeAssimpScale(scale: Int)
-    private external fun nativeAssimpScaleAsync(scale: Int)
 
-    companion object {
-        init {
-            System.loadLibrary("assimpviewer")
-        }
-    }
 }

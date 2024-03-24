@@ -10,7 +10,7 @@
 #include "AssetManager.h"
 
 void AssimpSkeletalFilter::VertexBoneData::AddBoneData(uint BoneID, float Weight) {
-    for (uint i = 0; i < ARRAY_SIZE_IN_ELEMENTS(IDs); i++) {
+    for (uint i = 0; i < std::size(IDs); i++) {
         if (Weights[i] == 0.0) {
             IDs[i] = BoneID;
             Weights[i] = Weight;
@@ -552,7 +552,7 @@ void AssimpSkeletalFilter::loadObj() {
     shaderProgram->program = program;
 
     if (scene->HasAnimations()) {
-        for (unsigned int i = 0; i < ARRAY_SIZE_IN_ELEMENTS(m_boneLocation); i++) {
+        for (unsigned int i = 0; i < std::size(m_boneLocation); i++) {
             char Name[128];
             memset(Name, 0, sizeof(Name));
             SNPRINTF(Name, sizeof(Name), "gBones[%d]", i);
