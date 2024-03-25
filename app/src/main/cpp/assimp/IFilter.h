@@ -33,7 +33,7 @@ public:
 
     virtual void setScale(int scale);
 
-    virtual void setJavaAssetManager(jobject javaAssetManager, JavaVM *javaVm) = 0;
+    virtual void setJavaAssetManager(jobject javaAssetManager, JNIEnv *env) = 0;
 
     int scrollX = 0;
     int scrollY = 0;

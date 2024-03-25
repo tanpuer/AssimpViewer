@@ -297,12 +297,3 @@ Vector3f Quaternion::ToDegrees()
 
     return Vector3f(f);
 }
-
-
-float RandomFloat()
-{
-    float Max = RAND_MAX;
-    return ((float)RANDOM() / Max);
-}
-
-

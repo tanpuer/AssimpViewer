@@ -50,7 +50,7 @@ public:
 
     void loadObj() override;
 
-    void setJavaAssetManager(jobject javaAssetManager, JavaVM *javaVm) override;
+    void setJavaAssetManager(jobject javaAssetManager, JNIEnv *env) override;
 
     void release() override;
 
@@ -96,9 +96,6 @@ private:
     long totalNumVertices;
     Matrix4f m_GlobalInverseTransform;
     long long m_startTime;
-    jobject javaAssetManager = NULL;
-    JNIEnv *env = nullptr;
-    JavaVM *javaVm = nullptr;
     std::unique_ptr<AssetManager> assetManager;
 };
 

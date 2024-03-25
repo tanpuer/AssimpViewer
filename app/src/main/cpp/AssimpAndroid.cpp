@@ -1,6 +1,5 @@
 #include <jni.h>
 #include <string>
-#include <AssimpLooper.h>
 #include "android/native_window_jni.h"
 #include "native_log.h"
 #include "AssimpApp.h"
@@ -8,17 +7,18 @@
 static const char *AssimpEngine = "com/cw/assimpviewer/AssimpEngine";
 jobject globalAssets = nullptr;
 static AssimpApp *assimpApp = nullptr;
+static JavaVM *gJVM = nullptr;
 
 extern "C" JNIEXPORT void JNICALL
 native_Init(JNIEnv *env, jobject instance, jobject javaAssetManager) {
     ALOGD("native_init")
     globalAssets = env->NewGlobalRef(javaAssetManager);
-    assimpApp = new AssimpApp(env, globalAssets);
+    assimpApp = new AssimpApp(env, globalAssets, gJVM);
 }
 
 extern "C" JNIEXPORT void JNICALL
 native_Created(JNIEnv *env, jobject instance, jobject surface) {
-    ALOGD("native_init")
+    ALOGD("native_Created")
     if (assimpApp != nullptr) {
         assimpApp->create(ANativeWindow_fromSurface(env, surface));
     }
@@ -26,7 +26,7 @@ native_Created(JNIEnv *env, jobject instance, jobject surface) {
 
 extern "C" JNIEXPORT void JNICALL
 native_Changed(JNIEnv *env, jobject instance, jint width, jint height) {
-    ALOGD("native_init")
+    ALOGD("native_Changed")
     if (assimpApp != nullptr) {
         assimpApp->change(width, height);
     }
@@ -34,7 +34,7 @@ native_Changed(JNIEnv *env, jobject instance, jint width, jint height) {
 
 extern "C" JNIEXPORT void JNICALL
 native_Destroyed(JNIEnv *env, jobject instance) {
-    ALOGD("native_init")
+    ALOGD("native_Destroyed")
     if (assimpApp != nullptr) {
         assimpApp->destroy();
     }
@@ -42,7 +42,7 @@ native_Destroyed(JNIEnv *env, jobject instance) {
 
 extern "C" JNIEXPORT void JNICALL
 native_DoFrame(JNIEnv *env, jobject instance) {
-    ALOGD("native_init")
+//    ALOGD("native_DoFrame")
     if (assimpApp != nullptr) {
         assimpApp->doFrame();
     }
@@ -50,7 +50,7 @@ native_DoFrame(JNIEnv *env, jobject instance) {
 
 extern "C" JNIEXPORT void JNICALL
 native_Scroll(JNIEnv *env, jobject instance, jint scrollX, jint scrollY) {
-    ALOGD("native_init")
+    ALOGD("native_Scroll")
     if (assimpApp != nullptr) {
         assimpApp->setScroll(scrollX, scrollY);
     }
@@ -58,7 +58,7 @@ native_Scroll(JNIEnv *env, jobject instance, jint scrollX, jint scrollY) {
 
 extern "C" JNIEXPORT void JNICALL
 native_Scale(JNIEnv *env, jobject instance, jint scale) {
-    ALOGD("native_init")
+    ALOGD("native_Scale")
     if (assimpApp != nullptr) {
         assimpApp->setScale(scale);
     }
@@ -66,7 +66,7 @@ native_Scale(JNIEnv *env, jobject instance, jint scale) {
 
 extern "C" JNIEXPORT void JNICALL
 native_Release(JNIEnv *env, jobject instance, jint scale) {
-    ALOGD("native_init")
+    ALOGD("native_Release")
     if (assimpApp != nullptr) {
         assimpApp->release();
         delete assimpApp;
@@ -82,7 +82,7 @@ static JNINativeMethod g_RenderMethods[] = {
         {"nativeAssimpDoFrame",   "()V",                                   (void *) native_DoFrame},
         {"nativeAssimpScroll",    "(II)V",                                 (void *) native_Scroll},
         {"nativeAssimpScale",     "(I)V",                                  (void *) native_Scale},
-        {"nativeRelease",         "()V",                                   (void *) native_Release},
+        {"nativeAssimpRelease",   "()V",                                   (void *) native_Release},
 };
 
 static int RegisterNativeMethods(JNIEnv *env, const char *className, JNINativeMethod *nativeMethods,
@@ -115,6 +115,7 @@ extern "C" jint JNI_OnLoad(JavaVM *jvm, void *p) {
         return JNI_ERR;
     }
     RegisterNativeMethods(env, AssimpEngine, g_RenderMethods, std::size(g_RenderMethods));
+    gJVM = jvm;
     return JNI_VERSION_1_6;
 }
 
@@ -124,5 +125,6 @@ extern "C" void JNI_OnUnload(JavaVM *jvm, void *p) {
     if (jvm->GetEnv((void **) env, JNI_VERSION_1_6) != JNI_OK) {
         return;
     }
+    gJVM = nullptr;
     UnRegisterNativeMethods(env, AssimpEngine);
 }

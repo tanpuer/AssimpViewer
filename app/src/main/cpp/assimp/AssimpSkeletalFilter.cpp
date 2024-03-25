@@ -555,7 +555,7 @@ void AssimpSkeletalFilter::loadObj() {
         for (unsigned int i = 0; i < std::size(m_boneLocation); i++) {
             char Name[128];
             memset(Name, 0, sizeof(Name));
-            SNPRINTF(Name, sizeof(Name), "gBones[%d]", i);
+            snprintf(Name, sizeof(Name), "gBones[%d]", i);
             m_boneLocation[i] = GetUniformLocation(Name);
         }
     }
@@ -576,7 +576,9 @@ void AssimpSkeletalFilter::initShaders() {
         const char *vertexShaderStr = assetManager->readFile("base_skeletal_vertex_shader.glsl");
         const char *fragmentShaderStr = assetManager->readFile("base_skeletal_fragment_shader.glsl");
         vertexShader = loadShader(GL_VERTEX_SHADER, vertexShaderStr);
+        checkGLError("load vertexShader");
         fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderStr);
+        checkGLError("load fragmentShader");
         delete vertexShaderStr;
         delete fragmentShaderStr;
     } else {
@@ -584,16 +586,12 @@ void AssimpSkeletalFilter::initShaders() {
     }
 }
 
-void AssimpSkeletalFilter::setJavaAssetManager(jobject javaAssetManager, JavaVM *javaVm) {
-    this->javaAssetManager = javaAssetManager;
-    this->javaVm = javaVm;
-    javaVm->AttachCurrentThread(&env, nullptr);
+void AssimpSkeletalFilter::setJavaAssetManager(jobject javaAssetManager, JNIEnv *env) {
     assetManager = std::make_unique<AssetManager>(env, javaAssetManager);
 }
 
 void AssimpSkeletalFilter::release() {
     AssimpBaseFilter::release();
-    javaVm->DetachCurrentThread();
 }
 
 void AssimpSkeletalFilter::getCameraInfo() {
