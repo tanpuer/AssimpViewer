@@ -20,8 +20,8 @@ set_target_properties(assmip
         ${JNI_LIBS_DIR}/${ANDROID_ABI}/libassimp.so)
 
 include_directories(
-        ${JNI_LIBS_DIR}/includes
-        ${JNI_LIBS_DIR}/includes/assmip
+        ${JNI_LIBS_DIR}/include
+        ${JNI_LIBS_DIR}/include/assmip
 
         src/main/cpp/base
         src/main/cpp/assimp
